@@ -22,7 +22,7 @@ tier2_study_id = phosp %>%
 ## 12 month forms
 ## This fill will preferentially use 3 months over 12 months over 6 weeks
 
-# #Variables to fill
+# Variables to fill
 vars_to_fill =  phosp %>% 
   select(matches("eq5d5l.*_pre")) %>% # add more here 
   names()
@@ -256,11 +256,11 @@ phosp = phosp %>%
     
     across(c(crf1a_com_card, crf1a_com_res,
              crf1a_com_gast, crf1a_com_neupsy,
-             crf1a_com_rheu, crf1a_com_mer, 
-             crf1a_com_mh, crf1a_com_id), 
+             crf1a_com_rheu, crf1a_com_mer,
+             crf1a_com_mh, crf1a_com_id),
            ~ case_when(
              . > 0 ~ "Yes",
-             TRUE ~ "No") %>% 
+             TRUE ~ "No") %>%
              factor()
     ),
     
@@ -639,7 +639,6 @@ phosp = phosp %>%
 
 # Within phosp, fill within patients across rows  ---------------------------------------
 ## This can be changed to joins in the future if causes any issues
-## Doesn't work at the moment for comorbidity, as that sums across columns for all rows
 ## See join below. 
 ## Currently this is for PFT calculations
 phosp = phosp %>%  
@@ -1010,6 +1009,8 @@ phosp = phosp %>%
   select(-swab_pcr_result) %>% 
   left_join(phosp_pcr) %>% 
   ff_relabel_df(phosp_pcr)
+
+rm(phosp_pcr)
 
 # Hospital discharge event only ----------------------------------------------------------
 ## This should be one row per patient, check below
