@@ -16,6 +16,20 @@ tier2_study_id = phosp %>%
   distinct(study_id) %>% 
   pull(study_id)
 
+# Fill important variables across events and instruments ---------------------------------
+## Within phosp, fill within patients across rows  ---------------------------------------
+## This can be changed to joins in the future if causes any issues
+## See join below. 
+## Currently this is for PFT calculations
+phosp = phosp %>%  
+  group_by(study_id) %>% 
+  fill(age_admission, crf1a_sex,  crf1b_eth, crf3a_rest_height,
+       crf1a_date_dis, crf1b_edu,
+       dplyr::starts_with("crf1a_com_"),
+       .direction = "downup") %>% 
+  ungroup() %>% 
+  ff_relabel_df(phosp)
+
 # Fill 12 months from 3 months------------------------------------------------------------
 ## Added 04/08/2021
 ## This may have other applications, but in particular baseline eq5d is missing from most
@@ -636,17 +650,6 @@ phosp = phosp %>%
     rcf_score = ff_label(rcf_score, "RCF score (factor)"),
     mocal_total = ff_label(mocal_total, "MOCA total score"),
   )
-
-# Within phosp, fill within patients across rows  ---------------------------------------
-## This can be changed to joins in the future if causes any issues
-## See join below. 
-## Currently this is for PFT calculations
-phosp = phosp %>%  
-  group_by(study_id) %>% 
-  fill(age_admission, age_admission_factor, crf1a_sex,  crf1b_eth_pft, crf3a_rest_height,
-       crf1a_date_dis, crf1b_edu, .direction = "downup") %>% 
-  ungroup() %>% 
-  ff_relabel_df(phosp)
 
 
 # MOCA adjusted for level of educational attainment, which needs the above fill ----------------
