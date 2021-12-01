@@ -61,7 +61,8 @@ data = data_raw %>%
 # Formating
 ## Update 11/05/2021
 #source("/home/eharrison/phosp_clean/PHOSPCOVID19FU_R_2021-02-10_1805.r")
-source("/home/eharrison/phosp_clean/PHOSPCOVID19FU_R_2021-05-11_0708.r")
+#source("/home/eharrison/phosp_clean/PHOSPCOVID19FU_R_2021-05-11_0708.r")
+source("/home/eharrison/phosp_clean/PHOSPCOVID19FU_R_2021-06-30_1749.r")
 
 # Out object and clean
 phosp = data
