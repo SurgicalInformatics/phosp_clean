@@ -859,7 +859,11 @@ phosp = phosp %>%
   mutate(    
     ### These should be numeric
     across(c(pft_tlco_reading1, pft_tlco_reading2, pft_kco_reading1, pft_kco_reading2, 
-             pft_mip_reading, pft_mip_reading2, pft_mep_reading1, pft_mep_reading2), parse_number)
+             pft_mip_reading, pft_mip_reading2, pft_mep_reading1, pft_mep_reading2,
+             pft_fev1_r1a, pft_fvc_r1a,
+             pft_fev1_r2a, pft_fvc_r2a,
+             pft_fev1_r3a, pft_fvc_r3a
+             ), as.numeric)
   ) %>% 
   
   mutate(
