@@ -16,21 +16,10 @@ tc = import_files %>%
   map(~ read_csv(.)) %>%
   set_names(import_files_names) %>% 
   map(~ rename_with(., ~ paste0(.x, "_tc")) %>%  # Add _tc to each variable name
-        rename("phosp_id" = 1,#                  # Bring back phosp_id and make new trucolours date common across all
-               "date_tc" = 2) %>% 
-        filter(!if_all(-c(1, 2),  ~ is.na(.)))   # Remove empty rows, now including id and date
-  )
-
-
-# Original function
-tc = import_files %>% 
-  map(~ read_csv(.)) %>%
-  set_names(import_files_names) %>% 
-  map(~ rename_with(., ~ paste0(.x, "_tc")) %>%  # Add _tc to each variable name
         rename("phosp_id" = 1,#               # Bring back phosp_id and make new trucolours date common across all
                "date_tc" = 2) %>% 
         mutate(
-          date_tc = if_else(hour(date_tc) > 2,   # Make dates for completion time 0000 - 0200 the previous date. 
+          date_tc = if_else(hour(date_tc) > 4,   # Make dates for completion time 0000 - 0200 the previous date. 
                         as_date(date_tc),
                         as_date(date_tc) - days(1)),
           date_tc = as_date(date_tc)) %>% # Get rid of time
@@ -43,6 +32,18 @@ tc = tc %>%
   reduce(full_join, by = c("phosp_id", "date_tc")) %>% 
   arrange(phosp_id, date_tc) %>% 
   filter(!if_all(bpi_unusual_pain_yn_tc:facit_limit_social_tc,  ~ is.na(.))) # Filter rows with no data
+
+phosp_id_not_joined =  c("100-00150",
+                         "102-00145",
+                         "510-00048",
+                         "510-00082") # Note these IDs only have one (misjoined) entry. Wouldn't work if multiple other dates.
+tc = tc %>%
+  filter(phosp_id %in% phosp_id_not_joined) %>%
+  fill(everything(), .direction = "downup") %>%
+  group_by(phosp_id) %>%
+  slice(1) %>%
+  bind_rows(tc %>% filter(!phosp_id %in% phosp_id_not_joined))
+
 
 # Extract study_id from phosp
 phosp_study_id = phosp %>% select(study_id, phosp_id) %>% 
